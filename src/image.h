@@ -22,4 +22,5 @@ LinkedList* read_images_from_file(char* file_name,int amount);
 
 void print_image(Image* image);
 
+
 #endif

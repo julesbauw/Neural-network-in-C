@@ -25,4 +25,9 @@ Matrix* neural_network_apply(NeuralNetwork* nn,Matrix* x);
 
 void neural_network_train(NeuralNetwork* nn, LinkedList* trainings_data);
 
+void neural_network_save(NeuralNetwork* nn,char* file_name);
+
+NeuralNetwork* neural_network_load(char* file_name);
+
+
 #endif

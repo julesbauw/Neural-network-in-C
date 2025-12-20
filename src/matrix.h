@@ -47,4 +47,8 @@ Matrix* matrix_addc(Matrix* A,double B);
 
 Matrix* matrix_subc(Matrix* A,double B);
 
+// save in file
+
+void matrix_save(Matrix* m,char* file_name);
+
 #endif
