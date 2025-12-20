@@ -3,3 +3,5 @@ matrix.c
 benchmark.c
 neural_network.c
 activation_functions.c
+image.c
+list.c

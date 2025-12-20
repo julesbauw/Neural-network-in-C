@@ -65,3 +65,7 @@ Matrix* neural_network_apply(NeuralNetwork* nn,Matrix* x) {
     
     return output;
 }
+
+void neural_network_train(NeuralNetwork* nn, LinkedList* trainings_data) {
+
+}

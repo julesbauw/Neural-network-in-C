@@ -54,7 +54,7 @@ Matrix* matrix_transpose(Matrix* m) {
     {
         for (int c = 0; c < T->c; c++)
         {
-            matrix_set(T,r,c,matrix_get(m,r,c));
+            matrix_set(T,r,c,matrix_get(m,c,r));
         }
         
     }
@@ -64,13 +64,13 @@ Matrix* matrix_transpose(Matrix* m) {
 
 
 Matrix* copy_matrix(Matrix* m) {
-    Matrix* cp = create_matrix(m->c,m->r);
+    Matrix* cp = create_matrix(m->r,m->c);
 
     for (int r = 0; r < cp->r; r++)
     {
         for (int c = 0; c < cp->c; c++)
         {
-            matrix_set(cp,r,c,matrix_get(m,c,r));
+            matrix_set(cp,r,c,matrix_get(m,r,c));
         }
         
     }
@@ -177,7 +177,7 @@ Matrix* matrix_mul(Matrix* A,Matrix* B) {
     return new matrix A * B
     */
     if (A->c != B->r) {
-        fprintf(stderr, "Invalid matrix mul operation\n");
+        fprintf(stderr, "Invalid matrix mul operation (%d x %d) (%d x %d)\n",A->r,A->c,B->r,B->c);
         exit(1);
     }
     

@@ -2,7 +2,7 @@
 #define NEURALNET
 #include "matrix.h"
 #include "activation_functions.h"
-
+#include "list.h"
 
 
 typedef struct {
@@ -23,6 +23,6 @@ void free_neural_network(NeuralNetwork* nn);
 
 Matrix* neural_network_apply(NeuralNetwork* nn,Matrix* x);
 
-
+void neural_network_train(NeuralNetwork* nn, LinkedList* trainings_data);
 
 #endif
