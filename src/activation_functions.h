@@ -8,4 +8,6 @@ double sign_function(double z);
 
 double sigmoid(double z);
 
+double d_sigmoid(double z);
+
 #endif

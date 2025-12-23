@@ -36,14 +36,14 @@ Image* read_image_from_line(char* line) {
     return im;
 }
 
-LinkedList* read_images_from_file(char* file_name,int amount) {
+Image** read_images_from_file(char* file_name,int amount) {
     /*
     Returns a linked list of images with size amount, the images are read from the file file_name (the first amount images)
     */
     FILE* fptr = fopen(file_name,"r");
     if (!fptr) return NULL;
 
-    LinkedList* list = create_linked_list();
+    Image** list = malloc(amount * sizeof(Image*));
 
     if (!list) {
         return NULL;
@@ -56,7 +56,7 @@ LinkedList* read_images_from_file(char* file_name,int amount) {
     int is_end = 0;
     int j = 0;
     
-    while(!is_end && j <= amount) {
+    while(!is_end && j < amount + 1) {
         char * succes = fgets(buffer,MAX_CHAR,fptr);
 
         if (!succes) {
@@ -72,7 +72,7 @@ LinkedList* read_images_from_file(char* file_name,int amount) {
         Image* image = read_image_from_line(buffer);
         
         if (image) {
-            linked_list_add(list,image);
+            list[j - 1] = image;
         }
 
         j++;

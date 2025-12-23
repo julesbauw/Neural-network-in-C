@@ -17,3 +17,8 @@ double sigmoid(double z) {
 
     return (1 / (1 - exp(-z)));
 }
+
+double d_sigmoid(double z) {
+    double sig = sigmoid(z);
+    return sig * (1 - sig);
+}

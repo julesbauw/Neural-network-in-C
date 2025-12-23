@@ -27,7 +27,6 @@ void matrix_fill(Matrix* m, double x);
 
 void matrix_print(Matrix* m);
 
-void matrix_map(Matrix* m, double (*f) (double));
 
 void matrix_randomize(Matrix* m,int n);
 // operations 
@@ -46,6 +45,23 @@ Matrix* matrix_mulc(Matrix* A,double B);
 Matrix* matrix_addc(Matrix* A,double B);
 
 Matrix* matrix_subc(Matrix* A,double B);
+
+Matrix* matrix_hadamard_product(Matrix* A,Matrix* B);
+
+Matrix* matrix_map(Matrix* m, double (*f) (double));
+
+
+// operations changing the matrix directly
+void matrix_map_into(Matrix* m, double (*f) (double));
+
+Matrix* matrix_add_into_A(Matrix* A,Matrix* B);
+
+
+void matrix_addc_into(Matrix* m,double B);
+
+void matrix_subc_into(Matrix* m,double B);
+
+void matrix_mulc_into(Matrix* m,double B);
 
 // save in file
 

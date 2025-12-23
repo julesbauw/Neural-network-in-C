@@ -1,7 +1,8 @@
-main.c
-matrix.c
-benchmark.c
-neural_network.c
+loss_functions.c
 activation_functions.c
 image.c
+main.c
+benchmark.c
 list.c
+matrix.c
+neural_network.c

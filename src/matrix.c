@@ -101,7 +101,22 @@ void matrix_print(Matrix* m) {
     }
 }
 
-void matrix_map(Matrix* m, double (*f) (double)) {
+Matrix* matrix_map(Matrix* m, double (*f) (double)) {
+
+    Matrix* B = copy_matrix(m);
+    for (int r = 0; r < m->r; r++)
+    {
+        for (int c = 0; c < m->c; c++)
+        {
+            double new_e = f(matrix_get(m,r,c));
+            matrix_set(B,r,c,new_e);
+        }
+        
+    }
+    return B;
+}
+
+void matrix_map_into(Matrix* m, double (*f) (double)) {
     for (int r = 0; r < m->r; r++)
     {
         for (int c = 0; c < m->c; c++)
@@ -302,4 +317,79 @@ Matrix* matrix_subc(Matrix* A,double B) {
 }
 
 
+Matrix* matrix_hadamard_product(Matrix* A,Matrix* B) {
+    /*
+    
+    Hadamard product, A and B should have the same shape!!!
+    */
+    Matrix* C = create_matrix(A->r,A->c);
 
+
+    double* Ae = A->elements;
+    double* Be = B->elements;
+    double* Ce = C->elements;
+
+    for (int r = 0; r < C->r; r++)
+    {
+        for (int c = 0; c < C->c; c++)
+        {
+            Ce[r * C->c + c] = Ae[r * A->c + c] * Be[r * B->c + c];
+        }
+        
+    }
+    return C;
+}
+
+
+void matrix_addc_into(Matrix* A,double B) {
+    
+    double* Ae = A->elements;
+
+    for (int r = 0; r < A->r; r++)
+    {
+        for (int c = 0; c < A->c; c++)
+        {
+            Ae[r * A->c + c] += B;
+        }
+        
+    }
+}
+
+void matrix_subc_into(Matrix* A,double B) {
+    matrix_addc_into(A,-B);
+}
+
+void matrix_mulc_into(Matrix* A,double B) {
+    
+    double* Ae = A->elements;
+
+    for (int r = 0; r < A->r; r++)
+    {
+        for (int c = 0; c < A->c; c++)
+        {
+            Ae[r * A->c + c] *= B;
+        }
+        
+    }
+}
+
+
+
+Matrix* matrix_add_into_A(Matrix* A,Matrix* B) {
+    /*
+    Adds B to A
+    */
+
+
+    double* Ae = A->elements;
+    double* Be = B->elements;
+
+    for (int r = 0; r < A->r; r++)
+    {
+        for (int c = 0; c < A->c; c++)
+        {
+            Ae[r * A->c + c] += Be[r * B->c + c];
+        }
+        
+    }
+}

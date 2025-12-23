@@ -9,34 +9,34 @@
 
 
 
-void neural_netwerk_test(){
+void test(char* file_name) {
+    Image** batch = read_images_from_file(file_name,BATCH_SIZE);
+
+    printf("batch succesfully readed\n");
+
     srand(time(NULL));
 
     NeuralNetwork* nn =  create_neural_network(0.01,28 * 28,10,500,sigmoid);
 
-    Matrix* x = create_matrix(28 * 28,1);
-    matrix_set(x,0,0,0.1);
-    Matrix* y = neural_network_apply(nn,x);
+    printf("network created!\n");
 
-    matrix_print(y);
+    neural_network_train(nn,batch);
 
-    free_matrix(x);
-    free_matrix(y);
+    neural_network_train(nn,batch);
+    neural_network_train(nn,batch);
+    neural_network_train(nn,batch);
+    neural_network_train(nn,batch);
+
+
     free_neural_network(nn);
-}
-
-
-
-void image_test(char* file_name) {
-    LinkedList* list = read_images_from_file(file_name,100);
-
-    for (size_t i = 0; i < list->size; i++)
+    
+    for (size_t i = 0; i < BATCH_SIZE; i++)
     {
-        Image* im = (Image*) linked_list_get(list,i)->data;
-
-        print_image(im);
+        free_image(batch[i]);
+        batch[i] = NULL;
     }
     
+    free(batch);    
 }
 
 
@@ -48,7 +48,7 @@ int main(int argc,char* argv[]) {
 
     char* file_name = argv[1];
 
-    image_test(file_name);
+    test(file_name);
 }
 
 

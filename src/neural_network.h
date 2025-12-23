@@ -3,6 +3,11 @@
 #include "matrix.h"
 #include "activation_functions.h"
 #include "list.h"
+#include "loss_functions.h"
+#include "image.h"
+
+#define BATCH_SIZE 32
+
 
 
 typedef struct {
@@ -21,9 +26,9 @@ NeuralNetwork* create_neural_network(double learning_rate,int input, int output,
 
 void free_neural_network(NeuralNetwork* nn);
 
-Matrix* neural_network_apply(NeuralNetwork* nn,Matrix* x);
+Matrix* neural_network_forward(NeuralNetwork* nn,Matrix* x);
 
-void neural_network_train(NeuralNetwork* nn, LinkedList* trainings_data);
+void neural_network_train(NeuralNetwork* nn, Image** trainings_data);
 
 void neural_network_save(NeuralNetwork* nn,char* file_name);
 
