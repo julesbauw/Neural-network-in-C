@@ -70,7 +70,7 @@ Matrix* neural_network_forward(NeuralNetwork* nn,Matrix* x) {
 
         free_matrix(output);
         output = new_output;
-        matrix_map(output,nn->activation_function);
+        matrix_map_into(output,nn->activation_function);
 
     }
     

@@ -6,7 +6,7 @@
 #include "loss_functions.h"
 #include "image.h"
 
-#define BATCH_SIZE 30
+#define BATCH_SIZE 32
 
 
 

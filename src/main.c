@@ -14,8 +14,8 @@
 
 NeuralNetwork* train(char* file_name) {
 
-    int batches = 2000;
-    int epochs = 20;
+    int batches = 1875;
+    int epochs = 100;
 
     Image** batch = read_images_from_file(file_name,BATCH_SIZE * batches);
 
@@ -23,7 +23,7 @@ NeuralNetwork* train(char* file_name) {
 
     srand(time(NULL));
 
-    NeuralNetwork* nn =  create_neural_network(0.01,28 * 28,10,500,sigmoid);
+    NeuralNetwork* nn = create_neural_network(0.01,28 * 28,10,64,sigmoid);
 
     printf("network created!\n");
 
@@ -37,7 +37,7 @@ NeuralNetwork* train(char* file_name) {
             avg_loss += neural_network_train(nn,batch + i * BATCH_SIZE);
         }
         
-        printf("epoch %ld loss: %f\n",ep,avg_loss);
+        printf("epoch %ld loss: %f\n",ep,avg_loss / batches);
     }
     
     
@@ -73,7 +73,12 @@ void test(char* file_name,NeuralNetwork* nn) {
         int guess = arg_max(prediction);
         int real = arg_max(data->label);
 
-        if (i % 100 == 0) printf("guess:%d , %d\n",guess,real);
+        if (real != guess) {
+            printf("guess: \n");
+            matrix_print(prediction);
+            printf("-----------\n");
+            print_image(data);
+        }
 
         if (real == guess) {
             correct += 1.0;
@@ -121,6 +126,10 @@ int main(int argc,char* argv[]) {
 
         NeuralNetwork* nn = neural_network_load(neural_network_file);
 
+        if (!nn) {
+            printf("Could not load network: %s\n",neural_network_file);
+            exit(1);
+        }
         test(data_file,nn);
         free_neural_network(nn);
     }

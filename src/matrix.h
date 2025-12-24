@@ -67,8 +67,5 @@ void matrix_subc_into(Matrix* m,double B);
 
 void matrix_mulc_into(Matrix* m,double B);
 
-// save in file
-
-void matrix_save(Matrix* m,char* file_name);
 
 #endif
