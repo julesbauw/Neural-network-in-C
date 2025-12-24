@@ -26,15 +26,15 @@ if **test**, the neural network in file "neural_network_file" will be loaded and
 kaggle datasets download -d oddrationale/mnist-in-csv
 ```
 
-## results
 
 
-| File    | hidden layers | activation function | loss function | epochs  | result  |
-| ------- | ------------- | --------------------| ------------- | ------- | 
-| nn1  | 500    | sigmoid | Half MSE | 20 | 90.12 %
-| nn2  | 128    | sigmoid | Half MSE | 20 | 90.17 %
-| nn3  | 128    | sigmoid | Half MSE | 40 | 91.23 %
-| nn4  | 64    | sigmoid | Half MSE | 100 | 93.10 %
+| File | Hidden nodes | Activation function | Loss function | Epochs | Result |
+|------|--------------|---------------------|---------------|--------|--------|
+| nn1  | 500          | Sigmoid             | Half MSE      | 20     | 90.12% |
+| nn2  | 128          | Sigmoid             | Half MSE      | 20     | 90.17% |
+| nn3  | 128          | Sigmoid             | Half MSE      | 40     | 91.23% |
+| nn4  | 64           | Sigmoid             | Half MSE      | 100    | 93.10% |
+
 
 
 
