@@ -26,6 +26,7 @@ if **test**, the neural network in file "neural_network_file" will be loaded and
 kaggle datasets download -d oddrationale/mnist-in-csv
 ```
 
+## results
 
 
 | File | Hidden nodes | Activation function | Loss function | Epochs | Result |
