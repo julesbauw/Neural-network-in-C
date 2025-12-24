@@ -47,6 +47,25 @@ double matrix_get(Matrix* m, int r, int c) {
     return m->elements[r * m->c + c];
 }
 
+int arg_max(Matrix* m) {
+    int max = 0;
+    int first = 1;
+    double max_value = 0.0;
+
+    for (size_t i = 0; i < m->c * m->r; i++)
+    {
+        if (first || m->elements[i] > max_value) {
+            max = i;
+            max_value = m->elements[i];
+            first = 0;
+        }
+    }
+
+    return max;
+    
+}
+
+
 Matrix* matrix_transpose(Matrix* m) {
     Matrix* T = create_matrix(m->c,m->r);
 
@@ -114,6 +133,21 @@ Matrix* matrix_map(Matrix* m, double (*f) (double)) {
         
     }
     return B;
+}
+
+double matrix_abs_sum(Matrix* m) {
+    double sum = 0.0;
+
+    for (int r = 0; r < m->r; r++)
+    {
+        for (int c = 0; c < m->c; c++)
+        {
+            double e = pow(matrix_get(m,r,c),2);
+
+        }
+        
+    }
+
 }
 
 void matrix_map_into(Matrix* m, double (*f) (double)) {

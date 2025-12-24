@@ -27,6 +27,10 @@ void matrix_fill(Matrix* m, double x);
 
 void matrix_print(Matrix* m);
 
+double matrix_abs_sum(Matrix* m);
+
+int arg_max(Matrix* m);
+
 
 void matrix_randomize(Matrix* m,int n);
 // operations 

@@ -6,7 +6,7 @@
 #include "loss_functions.h"
 #include "image.h"
 
-#define BATCH_SIZE 32
+#define BATCH_SIZE 30
 
 
 
@@ -28,7 +28,7 @@ void free_neural_network(NeuralNetwork* nn);
 
 Matrix* neural_network_forward(NeuralNetwork* nn,Matrix* x);
 
-void neural_network_train(NeuralNetwork* nn, Image** trainings_data);
+double neural_network_train(NeuralNetwork* nn, Image** trainings_data);
 
 void neural_network_save(NeuralNetwork* nn,char* file_name);
 

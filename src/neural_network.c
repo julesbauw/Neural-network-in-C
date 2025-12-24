@@ -3,6 +3,17 @@
 #include <stdlib.h>
 
 
+#define FREAD_SAFE(ptr, size, nmemb, file) \
+    do { \
+        size_t fread_error = fread(ptr, size, nmemb, file); \
+        if (fread_error != (nmemb)) { \
+            fprintf(stderr, "Error: fread failed (%zu/%zu)\n", fread_error, (size_t)(nmemb)); \
+            exit(1); \
+        } \
+    } while(0)
+
+
+
 
 NeuralNetwork* create_neural_network(double learning_rate,int input, int output, int hidden,ActivationFunction activation_function) {
     NeuralNetwork* nn = malloc(sizeof(NeuralNetwork));
@@ -66,7 +77,10 @@ Matrix* neural_network_forward(NeuralNetwork* nn,Matrix* x) {
     return output;
 }
 
-void neural_network_train(NeuralNetwork* nn, Image** batch) {
+double neural_network_train(NeuralNetwork* nn, Image** batch) {
+    /*
+    returns avg loss of the batch
+    */
 
     Matrix* W1_d = create_matrix(nn->hidden,nn->input);
     Matrix* W2_d = create_matrix(nn->output,nn->hidden);
@@ -81,13 +95,11 @@ void neural_network_train(NeuralNetwork* nn, Image** batch) {
         Matrix* input = img->input;
         Matrix* y = img->label;
 
-        Matrix* hidden = matrix_mul(nn->weights[0],input);
-        Matrix* hidden_act = copy_matrix(hidden);
-        matrix_map(hidden_act,nn->activation_function);
+        Matrix* z1 = matrix_mul(nn->weights[0],input);
+        Matrix* a1 = matrix_map(z1,nn->activation_function);
 
-        Matrix* output = matrix_mul(nn->weights[1],hidden_act);
-        Matrix* y_hat = copy_matrix(output);
-        matrix_map_into(y_hat,nn->activation_function);
+        Matrix* z2 = matrix_mul(nn->weights[1],a1);
+        Matrix* y_hat = matrix_map(z2,nn->activation_function);
         
         double loss = MSE(y,y_hat);
 
@@ -96,11 +108,11 @@ void neural_network_train(NeuralNetwork* nn, Image** batch) {
         // output nodes
         Matrix* d_loss = MSE_d(y,y_hat);
         
-        matrix_map_into(output,d_sigmoid);
+        matrix_map_into(z2,d_sigmoid);
         
-        Matrix* delta = matrix_hadamard_product(d_loss,output);
+        Matrix* delta = matrix_hadamard_product(d_loss,z2);
         
-        Matrix* transpose_hidden = matrix_transpose(hidden_act);
+        Matrix* transpose_hidden = matrix_transpose(z1);
         
         Matrix* grad = matrix_mul(delta,transpose_hidden);
 
@@ -110,7 +122,7 @@ void neural_network_train(NeuralNetwork* nn, Image** batch) {
 
         Matrix* temp = matrix_mul(W2_T,delta); // N2 x 1 matrix
 
-        Matrix* d_s_t = matrix_map(hidden,d_sigmoid); // N2 x 1 matrix
+        Matrix* d_s_t = matrix_map(z1,d_sigmoid); // N2 x 1 matrix
         
         Matrix* delta2 = matrix_hadamard_product(d_s_t,temp); // N2 x 1 matrix
 
@@ -132,26 +144,153 @@ void neural_network_train(NeuralNetwork* nn, Image** batch) {
         free_matrix(delta);
         free_matrix(transpose_hidden);
         free_matrix(d_loss);
-        free_matrix(hidden);
-        free_matrix(hidden_act);
-        free_matrix(output);
+        free_matrix(a1);
+        free_matrix(z1);
+        free_matrix(z2);
         free_matrix(y_hat);
 
     }
     
-    printf("%f\n",sum_loss / BATCH_SIZE);
-
     matrix_mulc_into(W1_d, - nn->learning_rate / BATCH_SIZE);
     matrix_mulc_into(W2_d, - nn->learning_rate / BATCH_SIZE);
-
     
+    // printf("%f\n",matrix_abs_sum(W1_d));
+    // printf("%f\n",matrix_abs_sum(W2_d));
+    
+
     // update weights!
     matrix_add_into_A(nn->weights[0],W1_d);
     matrix_add_into_A(nn->weights[1],W2_d);
-    
 
     free_matrix(W1_d);
     free_matrix(W2_d);
 
+    return sum_loss / BATCH_SIZE;
+
+}
+
+
+// save and load network
+
+
+void write_matrix(Matrix* m, FILE* fptr) {
+    fwrite(&m->r,sizeof(int),1,fptr);
+    
+    fwrite(&m->c,sizeof(int),1,fptr);
+
+    for (size_t i = 0; i < m->c * m->r; i++)
+    {
+        fwrite(&m->elements[i],sizeof(double),1,fptr);
+    }
+}
+
+void neural_network_save(NeuralNetwork* nn,char* file_name) {
+    FILE* fptr = fopen(file_name,"wb");
+    
+    if (!fptr) {
+        perror("fopen");
+        return;
+    }
+
+
+    fwrite(&nn->input,sizeof(int),1,fptr);
+    
+    fwrite(&nn->hidden,sizeof(int),1,fptr);
+
+    fwrite(&nn->output,sizeof(int),1,fptr);
+
+    fwrite(&nn->weight_amount,sizeof(int),1,fptr);
+
+    fwrite(&nn->learning_rate,sizeof(double),1,fptr);
+
+    for (size_t i = 0; i < nn->weight_amount; i++)
+    {
+        write_matrix(nn->weights[i],fptr);
+    }
+
+    fclose(fptr);
+    
+}
+
+Matrix* read_matrix(FILE* fptr) {
+
+    int r;
+    FREAD_SAFE(&r,sizeof(int),1,fptr);
+
+    int c;
+    FREAD_SAFE(&c,sizeof(int),1,fptr);
+
+    Matrix* m = malloc(sizeof(Matrix));
+
+    if (!m) {
+        return NULL;
+    }
+
+    m->elements = malloc(sizeof(double) * c * r);
+    if (!m->elements) {
+        free(m);
+        return NULL;
+    }
+    m->c = c;
+    m->r = r;
+
+    for (size_t i = 0; i < r*c; i++)
+    {
+        FREAD_SAFE(&m->elements[i],sizeof(double),1,fptr);
+    }
+
+    return m;
+    
+}
+
+NeuralNetwork* neural_network_load(char* file_name) {
+    FILE* fptr = fopen(file_name,"rb");
+
+    if (!fptr) {
+        perror("fopen");
+        return NULL;
+    }
+
+    NeuralNetwork* nn = malloc(sizeof(NeuralNetwork));
+
+    if (!nn) {
+        return NULL;
+    }
+
+    int input; 
+    FREAD_SAFE(&input,sizeof(int),1,fptr);
+    nn->input = input;
+
+    int hidden; 
+    FREAD_SAFE(&hidden,sizeof(int),1,fptr);
+    nn->hidden = hidden;
+
+    int output; 
+    FREAD_SAFE(&output,sizeof(int),1,fptr);
+    nn->output = output;    
+
+    int weight_amount; 
+    FREAD_SAFE(&weight_amount,sizeof(int),1,fptr);
+    nn->weight_amount = weight_amount;
+
+    double learning_rate; 
+    FREAD_SAFE(&learning_rate,sizeof(double),1,fptr);
+    nn->learning_rate = learning_rate;
+
+
+    //TODO, a way to save multiple activation functions!! maybe add enum??
+    nn->activation_function = sigmoid;
+
+    nn->weights = malloc(sizeof(Matrix*) * weight_amount);
+
+    for (size_t i = 0; i < weight_amount; i++)
+    {
+        nn->weights[i] = read_matrix(fptr);
+    }
+
+    fclose(fptr);
+
+
+    return nn;
 }
 

@@ -15,7 +15,7 @@ double sign_function(double z) {
 
 double sigmoid(double z) {
 
-    return (1 / (1 - exp(-z)));
+    return (1 / (1 + exp(-z)));
 }
 
 double d_sigmoid(double z) {
